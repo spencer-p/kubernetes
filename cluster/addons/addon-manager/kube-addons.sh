@@ -158,11 +158,25 @@ function create_resource_from_string() {
   local -r config_name=$4;
   local -r namespace=$5;
   while [ "${tries}" -gt 0 ]; do
+    # Resources that are set to the addon mode EnsureExists should not be overwritten if they already exist.
+    # EnsureExists means we should use `kubectl create`, other modes mean we should use `kubectl apply`.
+    local verb="apply"
+    if echo "${config_string}" | grep --silent "^\s*${ADDON_MANAGER_LABEL}:\s\+EnsureExists"; then
+      verb="create"
+    fi
+    # kubectl_output must be declared ahead of time to allow capturing kubectl's exit code and not local's exit code.
+    local kubectl_output;
     # shellcheck disable=SC2086
     # Disabling because "${KUBECTL_OPTS}" needs to allow for expansion here
-    echo "${config_string}" | ${KUBECTL} ${KUBECTL_OPTS} --namespace="${namespace}" apply -f - && \
-      log INFO "== Successfully started ${config_name} in namespace ${namespace} at $(date -Is)" && \
+    kubectl_output=$(echo "${config_string}" | ${KUBECTL} ${KUBECTL_OPTS} --namespace="${namespace}" ${verb} -f - 2>&1) && \
+        log INFO "== Successfully started ${config_name} in namespace ${namespace} at $(date -Is)" && \
+        return 0;
+    # Detect an already exists failure for creating EnsureExists resources.
+    # All other errors should result in a retry.
+    if echo "${kubectl_output}" | grep --silent "AlreadyExists"; then
+      log INFO "== Skipping start ${config_name} in namespace ${namespace}, already exists at $(date -Is)"
       return 0;
+    fi
     (( tries-- ))
     log WRN "== Failed to start ${config_name} in namespace ${namespace} at $(date -Is). ${tries} tries remaining. =="
     sleep "${delay}";
