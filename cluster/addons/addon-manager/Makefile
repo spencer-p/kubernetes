@@ -29,7 +29,7 @@ all: build
 build:
 	cp ./* $(TEMP_DIR)
 	curl -sSL --retry 5 https://dl.k8s.io/release/$(KUBECTL_VERSION)/bin/linux/$(ARCH)/kubectl > $(TEMP_DIR)/kubectl
-	chmod a+rx $(TEMP_DIR)/kube-addons.sh $(TEMP_DIR)/kubectl
+	chmod a+rx $(TEMP_DIR)/kube-addons.sh $(TEMP_DIR)/kube-addons-main.sh $(TEMP_DIR)/kubectl
 	cd $(TEMP_DIR) && sed -i.back "s|BASEIMAGE|$(BASEIMAGE)|g" Dockerfile
 
 ifneq ($(ARCH),amd64)
