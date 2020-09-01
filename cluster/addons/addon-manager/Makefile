@@ -51,7 +51,7 @@ endif
 test:
 	cp ./* $(TEMP_DIR)
 	curl -sSL --retry 5 https://dl.k8s.io/release/$(KUBECTL_VERSION)/bin/linux/$(ARCH)/kubectl > $(TEMP_DIR)/kubectl
-	chmod a+rx $(TEMP_DIR)/kube-addons.sh $(TEMP_DIR)/kube-addons-main.sh $(TEMP_DIR)/kubectl
+	chmod a+rx $(TEMP_DIR)/kube-addons.sh $(TEMP_DIR)/kube-addons-test.sh $(TEMP_DIR)/kubectl
 	cd $(TEMP_DIR) && KUBECTL_BIN=$(TEMP_DIR)/kubectl ./kube-addons-test.sh
 
 clean:
