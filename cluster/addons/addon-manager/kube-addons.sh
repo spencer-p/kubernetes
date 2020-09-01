@@ -163,7 +163,6 @@ function create_resource_from_string() {
       return 0;
     (( tries-- ))
     log WRN "== Failed to start ${config_name} in namespace ${namespace} at $(date -Is). ${tries} tries remaining. =="
-    echo "${kubectl_output}"
     sleep "${delay}";
   done
   return 1;

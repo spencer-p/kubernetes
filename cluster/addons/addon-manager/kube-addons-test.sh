@@ -16,10 +16,15 @@
 
 # These tests enforce behavior of kube-addon-manager functions against a real
 # cluster. A working Kubernetes cluster must be set up with kubectl configured.
+# To run with the released version of kubectl, use `make test`.
 
-#set -ou
+set -o errexit
+set -o pipefail
+set -o nounset
+#set -o xtrace
 
-KUBECTL_BIN="kubectl"
+# Default kubectl to the test users installation if needed.
+KUBECTL_BIN="${KUBECTL_BIN:-kubectl}"
 
 source "kube-addons.sh"
 
@@ -31,6 +36,7 @@ function setup(){
     kubectl create namespace "${TEST_NS}" && \
       return 0;
     (( tries-- ))
+    sleep 1
   done
 }
 
@@ -40,6 +46,7 @@ function teardown() {
     kubectl delete namespace "${TEST_NS}" && \
       return 0;
     (( tries-- ))
+    sleep 1
   done
 }
 
