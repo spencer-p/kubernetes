@@ -18,7 +18,7 @@
 # production use (see the Dockerfile)
 if [ -f "kube-addons.sh" ]; then
   source "kube-addons.sh"
-elif [ -f "kube-addons.sh" ]; then
+elif [ -f "/opt/kube-addons.sh" ]; then
   source "/opt/kube-addons.sh"
 else
   # If the required source is missing, we have to fail.
